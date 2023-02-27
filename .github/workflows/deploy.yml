@@ -92,8 +92,8 @@ jobs:
           type: localhost
 
       - name: Test ping AdminGUI
-          shell: bash
-          run: |
+        shell: bash
+        run: |
             set -ex
             export ADMIN_API_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.admin_api_url')
             export ADMIN_APP_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.admin_app_url')
@@ -101,8 +101,8 @@ jobs:
             curl -sSL "${ADMIN_API_URL}" -o /dev/null || true "in v2.7.2, there is no api endpoint"
             curl -fsSL "${ADMIN_APP_URL}" -o /dev/null || true "in v2.7.2, there is no app endpoint"
       - name: Show logs
-         if: always()
-         run: |
+       if: always()
+       run: |
            set -e
            mkdir -p logs/infra/generated \
              logs/infra/tfstates \
