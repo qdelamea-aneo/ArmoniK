@@ -33,4 +33,18 @@ jobs:
           echo $VERSION
           echo "Version :" >> $GITHUB_STEP_SUMMARY
           echo "$VERSION" >> $GITHUB_STEP_SUMMARY
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Install terraform
+        run: sh tools/install/terraform.sh
+
+      - name: Check Format
+        run: terraform fmt -check -recursive -diff
 
