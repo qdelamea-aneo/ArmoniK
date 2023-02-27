@@ -66,11 +66,11 @@ jobs:
           fetch-depth: 0
 
       - name: Install AWS CLI
-         run: sh tools/install/aws-cli.sh
+        run: sh tools/install/aws-cli.sh
 
       - name: Get Core Tag
-         id: core
-         run: |
+        id: core
+        run: |
            TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
            echo "tag=$TAG" >> $GITHUB_OUTPUT
       - name: Get Admin GUI Tag
