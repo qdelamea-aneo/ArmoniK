@@ -100,9 +100,10 @@ jobs:
           : "Add -f again when a success endpoint has been implemented"
           curl -sSL "${ADMIN_API_URL}" -o /dev/null || true "in v2.7.2, there is no api endpoint"
           curl -fsSL "${ADMIN_APP_URL}" -o /dev/null || true "in v2.7.2, there is no app endpoint"
-      - name: Show logs
-        if: always()
-        run: |
+
+     - name: Show logs
+       if: always()
+       run: |
            set -e
            mkdir -p logs/infra/generated \
              logs/infra/tfstates \
