@@ -47,4 +47,86 @@ jobs:
 
       - name: Check Format
         run: terraform fmt -check -recursive -diff
+  AdminGUI:
+    runs-on: ubuntu-latest
 
+    #  output
+    outputs:
+     terraform-output: ${{ steps.deploy.outputs.terraform-output }}
+    steps:
+      - name: Get type of VM
+        run: |
+          lscpu
+          uname -a
+          grep MemTotal /proc/meminfo
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+       - name: Install AWS CLI
+         run: sh tools/install/aws-cli.sh
+
+       - name: Get Core Tag
+         id: core
+         run: |
+           TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+           echo "tag=$TAG" >> $GITHUB_OUTPUT
+       - name: Get Admin GUI Tag
+         id: admin-gui
+         run: |
+           TAG=$(grep "admin-gui" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+           echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+       - name: Install Dependencies
+         uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
+         with:
+           docker: true
+           terraform: true
+           k3s: true
+
+       - name: Deploy
+         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
+         with:
+           type: localhost
+
+       - name: Test ping AdminGUI
+          shell: bash
+          run: |
+            set -ex
+            export ADMIN_API_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.admin_api_url')
+            export ADMIN_APP_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.admin_app_url')
+            : "Add -f again when a success endpoint has been implemented"
+            curl -sSL "${ADMIN_API_URL}" -o /dev/null || true "in v2.7.2, there is no api endpoint"
+            curl -fsSL "${ADMIN_APP_URL}" -o /dev/null || true "in v2.7.2, there is no app endpoint"
+       - name: Show logs
+         if: always()
+         run: |
+           set -e
+           mkdir -p logs/infra/generated \
+             logs/infra/tfstates \
+             logs/app
+           cp infrastructure/quick-deploy/localhost/keda/generated/keda-output.json \
+             infrastructure/quick-deploy/localhost/storage/generated/storage-output.json \
+             infrastructure/quick-deploy/localhost/monitoring/generated/monitoring-output.json \
+             infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json \
+             logs/infra/generated
+           cp infrastructure/quick-deploy/localhost/keda/generated/backend/keda-terraform.tfstate \
+             infrastructure/quick-deploy/localhost/storage/generated/backend/storage-terraform.tfstate \
+             infrastructure/quick-deploy/localhost/monitoring/generated/backend/monitoring-terraform.tfstate \
+             infrastructure/quick-deploy/localhost/armonik/generated/backend/armonik-terraform.tfstate \
+             logs/infra/tfstates
+           sudo cp -rL /var/log/pods/armonik_* logs/app
+           sudo chown $USER -R logs
+           tar -czf admin-gui.tar.gz logs
+           aws s3 cp admin-gui.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/admin-gui.tar.gz
+         env:
+           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+           AWS_EC2_METADATA_DISABLED: true
+
+       - name: Destroy deployment
+          uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
+          with:
+            type: localhost
