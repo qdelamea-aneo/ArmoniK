@@ -104,28 +104,28 @@ jobs:
       - name: Show logs
         if: always()
         run: |
-           set -e
-           mkdir -p logs/infra/generated \
-             logs/infra/tfstates \
-             logs/app
-           cp infrastructure/quick-deploy/localhost/keda/generated/keda-output.json \
-             infrastructure/quick-deploy/localhost/storage/generated/storage-output.json \
-             infrastructure/quick-deploy/localhost/monitoring/generated/monitoring-output.json \
-             infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json \
-             logs/infra/generated
-           cp infrastructure/quick-deploy/localhost/keda/generated/backend/keda-terraform.tfstate \
-             infrastructure/quick-deploy/localhost/storage/generated/backend/storage-terraform.tfstate \
-             infrastructure/quick-deploy/localhost/monitoring/generated/backend/monitoring-terraform.tfstate \
-             infrastructure/quick-deploy/localhost/armonik/generated/backend/armonik-terraform.tfstate \
-             logs/infra/tfstates
-           sudo cp -rL /var/log/pods/armonik_* logs/app
-           sudo chown $USER -R logs
-           tar -czf admin-gui.tar.gz logs
-           aws s3 cp admin-gui.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/admin-gui.tar.gz
-         env:
-           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-           AWS_EC2_METADATA_DISABLED: true
+          set -e
+          mkdir -p logs/infra/generated \
+            logs/infra/tfstates \
+            logs/app
+          cp infrastructure/quick-deploy/localhost/keda/generated/keda-output.json \
+            infrastructure/quick-deploy/localhost/storage/generated/storage-output.json \
+            infrastructure/quick-deploy/localhost/monitoring/generated/monitoring-output.json \
+            infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json \
+            logs/infra/generated
+          cp infrastructure/quick-deploy/localhost/keda/generated/backend/keda-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/storage/generated/backend/storage-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/monitoring/generated/backend/monitoring-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/armonik/generated/backend/armonik-terraform.tfstate \
+            logs/infra/tfstates
+          sudo cp -rL /var/log/pods/armonik_* logs/app
+          sudo chown $USER -R logs
+          tar -czf admin-gui.tar.gz logs
+          aws s3 cp admin-gui.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/admin-gui.tar.gz
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_EC2_METADATA_DISABLED: true
 
       - name: Destroy deployment
           uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
