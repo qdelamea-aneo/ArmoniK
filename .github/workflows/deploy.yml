@@ -74,22 +74,22 @@ jobs:
            TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
            echo "tag=$TAG" >> $GITHUB_OUTPUT
       - name: Get Admin GUI Tag
-         id: admin-gui
-         run: |
+        id: admin-gui
+        run: |
            TAG=$(grep "admin-gui" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
            echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       - name: Install Dependencies
-         uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
-         with:
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
+        with:
            docker: true
            terraform: true
            k3s: true
 
       - name: Deploy
-         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
-         with:
-           type: localhost
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
+        with:
+          type: localhost
 
       - name: Test ping AdminGUI
           shell: bash
