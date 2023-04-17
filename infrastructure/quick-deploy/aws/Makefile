@@ -263,7 +263,7 @@ clean-armonik:
 ####################################
 
 kubeconfig:
-	@echo "Execute the following command: export KUBECONFIG=${HOME}/.kube/config:$(shell cat $(EKS_PARAMETERS_FILE) | jq -r '.eks.kubeconfig_file'):${KUBECONFIG}"
+	@echo "Execute the following command: export KUBECONFIG=${HOME}/.kube/config:$(shell cat $(GENERATED_DIR)/armonik-output.json | jq -r '.eks.kubeconfig_file'):${KUBECONFIG}"
 	@echo "------------------------------"
 
 ####################################
