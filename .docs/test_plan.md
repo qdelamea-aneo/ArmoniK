@@ -70,10 +70,10 @@ These tests are dependent of the configuration of the underlying infrastructure 
 |        |       |
 | ------ | ----- |
 | **Date** | 03/29/2023 |
-| **Infra version** |  2.12.0  |
-| **Core version** | 0.11.1 |
-| **API version** | 3.5.2 |
-| **Extension c# version** | 0.9.1 |
+| **Infra version** |  2.12.3  |
+| **Core version** | 0.12.4 |
+| **API version** | 3.6.0 |
+| **Extension c# version** | 0.9.5 |
 | **Instance type** | c24.xlarge |
 | **Processor** | Intel Xeon de 2e (Cascade Lake) |
 | **CPU frequency** | 3.6 GHz - 3.9 GHz |
