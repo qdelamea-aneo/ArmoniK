@@ -5,35 +5,34 @@ from pytimeparse import parse
 import matplotlib.pyplot as plt
 import numpy as np
 
-# class test_case
+# Class test_case
+# An object store a lists of the stats of all the runs of the test case
+# So we could calculate the mean and the median of each stat
 class TestCase:
-    nbtasks = []
-    time = []
-    exec_time = []
-    sub_time = []
-    retrv_time = []
-    throughput = []
-    d_parallel = []
+  
+    def __init__(self,file) :
+        self.nbtasks = []
+        self.time = []
+        self.exec_time = []
+        self.sub_time = []
+        self.retrv_time = []
+        self.throughput = []
+        self.d_parallel = []
+        self.file = file
+        with open(file) as my_bench_file:
+            data= my_bench_file.read()
+        #case = TestCase()
+        runs = json.loads(data)
 
-
-#function to read file and stock the data in lists
-def f_reader(file):
-    with open(file) as my_bench_file:
-        data= my_bench_file.read()
-    case = TestCase
-    runs = json.loads(data)
-
-    for run in runs:
-        if(run["nb_pods"]==100):
-            case.nbtasks.append(run["TotalTasks"])
-            case.time.append(float(parse(run["ElapsedTime"])))
-            case.exec_time.append(float(parse(run["TasksExecutionTime"])))
-            case.sub_time.append(float(parse(run["SubmissionTime"])))
-            case.retrv_time.append(float(parse(run["ResultRetrievingTime"])))
-            case.throughput.append(float(run["throughput"]))
-            case.d_parallel.append(run["DegreeOfParallelism"])
-
-    return case
+        for run in runs:
+            if(run["nb_pods"]==100):
+                self.nbtasks.append(run["TotalTasks"])
+                self.time.append(float(parse(run["ElapsedTime"])))
+                self.exec_time.append(float(parse(run["TasksExecutionTime"])))
+                self.sub_time.append(float(parse(run["SubmissionTime"])))
+                self.retrv_time.append(float(parse(run["ResultRetrievingTime"])))
+                self.throughput.append(float(run["throughput"]))
+                self.d_parallel.append(run["DegreeOfParallelism"])
 
 
 if __name__ == "__main__":
@@ -43,23 +42,39 @@ if __name__ == "__main__":
 ######################################################################
 
     #open 10k tasks on 100 pods file
-    file = '10k.json'
+    files = ['10k.json','100k.json']
+    JsonFiles = [x for x in files if x.endswith(".json")]
 
-    #store the runs stats
-    run_10k_100p = TestCase
-    run_10k_100p=f_reader(file)
+    # dictionary to store the stats of each test case
+    cases = {     
+    }
+    cases["10k"] = TestCase(JsonFiles[0])
+    cases["100k"] = TestCase(JsonFiles[1])
 
-    #calculte the mean times of the runs
-    mean_time_10k_100=np.mean(run_10k_100p.time)
-    mean_exec_time_10k_100p=np.mean(run_10k_100p.exec_time)
-    mean_sub_time_10k_100=np.mean(run_10k_100p.sub_time)
-    mean_retrv_time_10k_100=np.mean(run_10k_100p.retrv_time)
-    mean_throughput_10k_100=np.mean(run_10k_100p.throughput)
+    # Dictionary to store the mean of each test case
+    mean = {
+        "time" : {},
+        "exec_time" : {},
+        "sub_time" : {},
+        "retrv_time" : {},
+        "throughput" : {}
+    }
+    
+    #calculte the mean of each test case
+    for file in files :
+        filename = file.split(".")[0]
+        mean["time"][filename] = np.mean(cases[filename].time)
+        mean["exec_time"][filename] = np.mean(cases[filename].exec_time)
+        mean["sub_time"][filename] = np.mean(cases[filename].sub_time)
+        mean["retrv_time"][filename] = np.mean(cases[filename].retrv_time)
+        mean["throughput"][filename] = np.mean(cases[filename].throughput)
 
-    #print the perf stats
-    print('Degree of parallelism of retrieving time is : '+ str(run_10k_100p.d_parallel[0]))
-    print('mean total time for treatement of 10K tasks on 100 pods is : '+ str(mean_time_10k_100) +' s')
-    print('mean time of the execution of 10K tasks on 100 pods is : '+ str(mean_exec_time_10k_100p) +' s')
-    print('mean time of the submission of 10K tasks on 100 pods is : '+ str(mean_sub_time_10k_100) +' s')
-    print('mean time of the retrieving of 10K tasks on 100 pods is : '+ str(mean_retrv_time_10k_100) +' s')
-    print('mean throughput for 10K tasks on 100 pods is : '+ str(mean_throughput_10k_100)+" tasks/s \n")
+    # print the stats
+    for file in files :
+        filename = file.split(".")[0]
+        print('Degree of parallelism of retrieving time is : '+ str(cases[filename].d_parallel[0]))
+        print('mean total time for treatement of '+filename+ ' tasks on 100 pods is : '+ str(mean["time"][filename]) +' s')
+        print('mean time of the execution of '+filename+' tasks on 100 pods is : '+ str(mean["exec_time"][filename]) +' s')
+        print('mean time of the submission of '+filename+' tasks on 100 pods is : '+ str(mean["sub_time"][filename]) +' s')
+        print('mean time of the retrieving of '+filename+' tasks on 100 pods is : '+ str(mean["retrv_time"][filename]) +' s')
+        print('mean throughput for '+filename+' tasks on 100 pods is : '+ str(mean["throughput"][filename])+" tasks/s \n")
