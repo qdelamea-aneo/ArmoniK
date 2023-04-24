@@ -30,5 +30,8 @@ def clean_file(file):
         json.dump(dic_json, f)
 
 #clean the stats file
-file = "10k.json"
+#file = "../stats/100p/1k.json"
+#file = "../stats/100p/5k.json"
+#file = "../stats/100p/10k.json"
+file = "../stats/100p/100k.json"
 clean_file(file)

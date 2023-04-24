@@ -42,14 +42,16 @@ if __name__ == "__main__":
 ######################################################################
 
     #open 10k tasks on 100 pods file
-    files = ['10k.json','100k.json']
+    files = ['../stats/100p/1k.json','../stats/100p/5k.json','../stats/100p/10k.json','../stats/100p/100k.json']
     JsonFiles = [x for x in files if x.endswith(".json")]
 
     # dictionary to store the stats of each test case
     cases = {     
     }
-    cases["10k"] = TestCase(JsonFiles[0])
-    cases["100k"] = TestCase(JsonFiles[1])
+    cases["1k"] = TestCase(JsonFiles[0])
+    cases["5k"] = TestCase(JsonFiles[1])
+    cases["10k"] = TestCase(JsonFiles[2])
+    cases["100k"] = TestCase(JsonFiles[3])
 
     # Dictionary to store the mean of each test case
     mean = {

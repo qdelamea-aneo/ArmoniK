@@ -1,15 +1,14 @@
 #!/bin/bash
 
-#ArmoniK "2.11.0"
-export CONTROL_PLANE_URL=$(cat ../../../../infrastructure/quick-deploy/aws/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
+export CONTROL_PLANE_URL=$(cat ../../../../../infrastructure/quick-deploy/aws/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
 
 #run  10000 tasks on 100 pods
 docker run --rm \
 	-e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
 	-e BenchOptions__nTasks=10000 \
-	-e BenchOptions__TaskDurationMs=500 \
-	-e BenchOptions__PayloadSize=100 \
-	-e BenchOptions__ResultSize=100 \
+	-e BenchOptions__TaskDurationMs=1 \
+	-e BenchOptions__PayloadSize=1 \
+	-e BenchOptions__ResultSize=1 \
 	-e BenchOptions__Partition=bench \
     	-e BenchOptions__ShowEvents=false \
 	-e BenchOptions__BatchSize=50 \
