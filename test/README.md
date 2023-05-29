@@ -13,6 +13,7 @@ This document describe how to use the scripts for do the tests and get the resul
 
 cleaner.py will clean the json output files.
 * Parameters : path to the json files we want to clean
+merge_jsons.py : merges test_env.json is a json file wich describes the test environement(third party components of ArmoniK) and we have to set it for each test with the parameters json file of the tested version of ArmoniK with the clean results of the test. 
 
 ### Analyse the results 
 

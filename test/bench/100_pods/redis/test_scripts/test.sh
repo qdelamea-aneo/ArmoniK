@@ -9,10 +9,13 @@
 #do
 #    ./bench_10k.sh >> 10k.json
 #done
-#/bench_1k.sh >> ../stats/100p/1k.json && ./bench_5k.sh >> ../stats/100p/5k.json && ./bench_10k.sh >> ../stats/100p/10k.json && ./bench_100k.sh >> ../stats/100p/100k.json
-./bench_100k.sh >> ../stats/100p/100k.json
+
+./bench_1k.sh >> ../stats/1k.json && ./bench_5k.sh >> ../stats/5k.json
 #clean the output file
-#../python_scripts/cleaner.py
+../python_scripts/cleaner.py
+
+#merge json files
+../python_scripts/merge_jsons.py
 
 #print the test stats and plot graphs
 #../python_scripts/wjson.py
